@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unbiased AI – Fairness & Bias Detection</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,600;0,800;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ===== TOAST NOTIFICATION ===== -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loading-overlay" class="loading-overlay hidden">
+  <div class="loader-ring"><div></div><div></div><div></div><div></div></div>
+  <p class="loader-text">Processing...</p>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+    <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+    <li><a href="#" class="nav-link" data-page="about">About</a></li>
+    <li class="nav-auth-only hidden"><a href="#" class="nav-link" data-page="dashboard">Dashboard</a></li>
+    <li class="nav-auth-only hidden"><a href="#" class="nav-link" data-page="upload">Upload</a></li>
+    <li class="nav-auth-only hidden"><a href="#" class="nav-link" data-page="results">Results</a></li>
+    <li class="nav-auth-only hidden"><a href="#" class="nav-link" data-page="reports">Reports</a></li>
+    <li class="nav-auth-only hidden"><a href="#" class="nav-link" data-page="feedback">Feedback</a></li>
+    <li class="nav-admin-only hidden"><a href="#" class="nav-link" data-page="admin">Admin</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div class="nav-guest" id="nav-guest">
+      <a href="#" class="btn btn-ghost" data-page="login">Login</a>
+      <a href="#" class="btn btn-primary" data-page="register">Register</a>
+    </div>
+    <div class="nav-user hidden" id="nav-user">
+      <span class="user-badge" id="user-badge"></span>
+      <button class="btn btn-ghost" id="logout-btn">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== PAGES ===== -->
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Trusted AI Fairness Platform</div>
+      <h1 class="hero-title">
+        <span class="italic-serif">Unbiased</span> Decisions<br />Start Here
+      </h1>
+      <p class="hero-subtitle">Detect, analyze, and eliminate bias from your AI systems. Our platform provides fairness metrics, explainable insights, and actionable reports for responsible AI.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" data-page="register">Get Started Free</button>
+        <button class="btn btn-outline btn-lg" data-page="about">Learn More <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">98.4%</span><span class="stat-label">Detection Accuracy</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Fairness Metrics</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">12K+</span><span class="stat-label">Models Audited</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card-stack">
+        <div class="hcard hcard-1">
+          <div class="hcard-label">Demographic Parity</div>
+          <div class="hcard-bars">
+            <div class="hbar"><span>Group A</span><div class="hbar-fill" style="--w:82%"><div class="hbar-track" style="width:82%"></div></div><span>82%</span></div>
+            <div class="hbar"><span>Group B</span><div class="hbar-fill" style="--w:79%"><div class="hbar-track" style="width:79%"></div></div><span>79%</span></div>
+            <div class="hbar"><span>Group C</span><div class="hbar-fill" style="--w:85%"><div class="hbar-track" style="width:85%"></div></div><span>85%</span></div>
+          </div>
+        </div>
+        <div class="hcard hcard-2">
+          <div class="hcard-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="hcard-label">Bias Score</div>
+          <div class="hcard-score">0.03</div>
+          <div class="hcard-tag low">Low Bias Detected</div>
+        </div>
+        <div class="hcard hcard-3">
+          <div class="hcard-label">Equalized Odds</div>
+          <div class="mini-chart-wrapper"><canvas id="heroChart" width="140" height="70"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section">
+    <div class="section-header">
+      <h2>Why <span class="italic-serif">Unbiased AI</span>?</h2>
+      <p>A comprehensive platform built for AI fairness at every stage of your ML pipeline.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+        <h3>Deep Bias Detection</h3>
+        <p>Analyze 50+ fairness metrics across demographic groups including demographic parity, equalized odds, and counterfactual fairness.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <h3>Interactive Reports</h3>
+        <p>Visualize bias patterns with interactive charts, comparison tables, and downloadable PDF reports for stakeholders.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-users-gear"></i></div>
+        <h3>Role-Based Access</h3>
+        <p>Admin, Analyst, and User roles with tailored dashboards, permissions, and workflow management.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-file-csv"></i></div>
+        <h3>Easy Data Upload</h3>
+        <p>Upload CSV or Excel datasets with drag-and-drop. Automatic schema detection and column mapping.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-bell"></i></div>
+        <h3>Smart Alerts</h3>
+        <p>Get notified when bias exceeds thresholds. Configure custom alert rules per project and metric.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+        <h3>Enterprise Security</h3>
+        <p>SOC 2 compliant. Your data is encrypted in transit and at rest. Role-based access controls throughout.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Ready to build <span class="italic-serif">fairer</span> AI?</h2>
+      <p>Join thousands of data scientists and ML engineers ensuring ethical AI.</p>
+      <button class="btn btn-primary btn-lg" data-page="register">Start Your Free Audit</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+      </div>
+      <p class="footer-copy">© 2025 UnbiasedAI. Promoting fairness in automated decisions.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="page-about">
+  <div class="page-hero-sm">
+    <h1>About <span class="italic-serif">Unbiased AI</span></h1>
+    <p>Our mission, team, and commitment to ethical AI.</p>
+  </div>
+  <div class="content-container">
+    <div class="about-grid">
+      <div class="about-block">
+        <div class="about-icon"><i class="fa-solid fa-bullseye"></i></div>
+        <h3>Our Mission</h3>
+        <p>We believe every automated decision should be fair, transparent, and accountable. UnbiasedAI provides the tools to make that possible — from data scientists to policy-makers.</p>
+      </div>
+      <div class="about-block">
+        <div class="about-icon"><i class="fa-solid fa-eye"></i></div>
+        <h3>Our Vision</h3>
+        <p>A world where AI amplifies human potential without discrimination. We champion explainability, fairness metrics, and regulatory compliance as first-class engineering concerns.</p>
+      </div>
+      <div class="about-block">
+        <div class="about-icon"><i class="fa-solid fa-handshake"></i></div>
+        <h3>Our Values</h3>
+        <p>Transparency, inclusivity, and rigor guide every feature we build. We partner with academia, regulators, and civil society to continuously improve fairness standards.</p>
+      </div>
+    </div>
+    <div class="about-timeline">
+      <h2>Platform Capabilities</h2>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>Dataset Ingestion</h4><p>Upload CSV/Excel datasets with automatic schema parsing and preview.</p></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>Bias Analysis Engine</h4><p>Run 50+ fairness metrics: demographic parity, equalized odds, individual fairness, and more.</p></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>Visual Reporting</h4><p>Generate interactive charts, confusion matrices, and exportable PDF reports.</p></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>Remediation Suggestions</h4><p>AI-powered recommendations to reduce bias while preserving model accuracy.</p></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>Continuous Monitoring</h4><p>Schedule recurring audits and receive alerts when bias drifts beyond thresholds.</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER PAGE -->
+<div class="page" id="page-register">
+  <div class="auth-wrapper">
+    <div class="auth-panel">
+      <div class="auth-header">
+        <div class="auth-logo"><i class="fa-solid fa-scale-balanced"></i></div>
+        <h2>Create Account</h2>
+        <p>Join the fairness-first AI community</p>
+      </div>
+      <form id="register-form" class="auth-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <div class="input-wrap"><i class="fa-solid fa-user"></i><input type="text" id="reg-fname" placeholder="John" /></div>
+            <span class="field-error" id="err-fname"></span>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <div class="input-wrap"><i class="fa-solid fa-user"></i><input type="text" id="reg-lname" placeholder="Doe" /></div>
+            <span class="field-error" id="err-lname"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-wrap"><i class="fa-solid fa-envelope"></i><input type="email" id="reg-email" placeholder="john@company.com" /></div>
+          <span class="field-error" id="err-reg-email"></span>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <div class="input-wrap"><i class="fa-solid fa-user-tie"></i>
+            <select id="reg-role">
+              <option value="">Select role...</option>
+              <option value="user">User</option>
+              <option value="analyst">Analyst</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <span class="field-error" id="err-role"></span>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="reg-pass" placeholder="Min 8 characters" /><button type="button" class="toggle-pass" tabindex="-1"><i class="fa-solid fa-eye"></i></button></div>
+          <div class="pass-strength" id="pass-strength"><div class="strength-bar"></div></div>
+          <span class="field-error" id="err-reg-pass"></span>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="reg-cpass" placeholder="Repeat password" /></div>
+          <span class="field-error" id="err-cpass"></span>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="reg-terms" />
+          <label for="reg-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        <span class="field-error" id="err-terms"></span>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+        <p class="auth-switch">Already have an account? <a href="#" data-page="login">Sign in</a></p>
+      </form>
+    </div>
+    <div class="auth-side">
+      <div class="auth-side-content">
+        <h3>Fairness at every step</h3>
+        <ul class="auth-benefits">
+          <li><i class="fa-solid fa-check"></i> Free bias detection on your first dataset</li>
+          <li><i class="fa-solid fa-check"></i> Access to 50+ fairness metrics</li>
+          <li><i class="fa-solid fa-check"></i> Interactive visual reports</li>
+          <li><i class="fa-solid fa-check"></i> Role-based team collaboration</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div class="page" id="page-login">
+  <div class="auth-wrapper auth-wrapper-sm">
+    <div class="auth-panel">
+      <div class="auth-header">
+        <div class="auth-logo"><i class="fa-solid fa-scale-balanced"></i></div>
+        <h2>Welcome Back</h2>
+        <p>Sign in to your UnbiasedAI account</p>
+      </div>
+      <div class="demo-accounts">
+        <p class="demo-label">Demo accounts:</p>
+        <div class="demo-btns">
+          <button class="demo-btn" data-role="admin">Admin</button>
+          <button class="demo-btn" data-role="analyst">Analyst</button>
+          <button class="demo-btn" data-role="user">User</button>
+        </div>
+      </div>
+      <form id="login-form" class="auth-form" novalidate>
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-wrap"><i class="fa-solid fa-envelope"></i><input type="email" id="login-email" placeholder="your@email.com" /></div>
+          <span class="field-error" id="err-login-email"></span>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrap"><i class="fa-solid fa-lock"></i><input type="password" id="login-pass" placeholder="Your password" /><button type="button" class="toggle-pass" tabindex="-1"><i class="fa-solid fa-eye"></i></button></div>
+          <span class="field-error" id="err-login-pass"></span>
+        </div>
+        <div class="form-row-space">
+          <label class="form-check inline"><input type="checkbox" id="remember" /><span>Remember me</span></label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+        <p class="auth-switch">Don't have an account? <a href="#" data-page="register">Register</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- USER DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link active" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="#" class="sidebar-link" data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Dataset</a>
+        <a href="#" class="sidebar-link" data-page="results"><i class="fa-solid fa-chart-bar"></i> Bias Results</a>
+        <a href="#" class="sidebar-link" data-page="reports"><i class="fa-solid fa-file-lines"></i> Reports</a>
+        <a href="#" class="sidebar-link" data-page="feedback"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
+        <a href="#" class="sidebar-link admin-only hidden" data-page="admin"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-sm" id="sidebar-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </aside>
+    <main class="dashboard-main">
+      <div class="dash-topbar">
+        <button class="sidebar-toggle" id="sidebar-toggle"><i class="fa-solid fa-bars"></i></button>
+        <h2 class="dash-title" id="dash-greeting">Dashboard</h2>
+        <div class="dash-topbar-right">
+          <button class="notif-btn" id="notif-btn"><i class="fa-solid fa-bell"></i><span class="notif-badge">3</span></button>
+          <div class="user-avatar" id="user-avatar">U</div>
+        </div>
+      </div>
+      <div class="notif-dropdown hidden" id="notif-dropdown">
+        <div class="notif-header">Notifications <span class="notif-count">3</span></div>
+        <div class="notif-item unread"><i class="fa-solid fa-triangle-exclamation warn"></i><div><p>High bias detected in <strong>hiring_model.csv</strong></p><small>2 hours ago</small></div></div>
+        <div class="notif-item unread"><i class="fa-solid fa-circle-check ok"></i><div><p>Report <strong>Q3_audit.pdf</strong> is ready</p><small>5 hours ago</small></div></div>
+        <div class="notif-item"><i class="fa-solid fa-circle-info info"></i><div><p>New fairness metric added: <strong>Counterfactual</strong></p><small>1 day ago</small></div></div>
+      </div>
+      <div class="dash-content" id="dash-content">
+        <!-- Populated by JS based on role -->
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- DATASET UPLOAD PAGE -->
+<div class="page" id="page-upload">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar-upload">
+      <div class="sidebar-header">
+        <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="#" class="sidebar-link active" data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Dataset</a>
+        <a href="#" class="sidebar-link" data-page="results"><i class="fa-solid fa-chart-bar"></i> Bias Results</a>
+        <a href="#" class="sidebar-link" data-page="reports"><i class="fa-solid fa-file-lines"></i> Reports</a>
+        <a href="#" class="sidebar-link" data-page="feedback"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
+        <a href="#" class="sidebar-link admin-only hidden" data-page="admin"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </aside>
+    <main class="dashboard-main">
+      <div class="dash-topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar('sidebar-upload')"><i class="fa-solid fa-bars"></i></button>
+        <h2 class="dash-title">Upload Dataset</h2>
+      </div>
+      <div class="dash-content">
+        <div class="upload-container">
+          <div class="upload-zone" id="upload-zone">
+            <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <h3>Drag & Drop your dataset</h3>
+            <p>Supports <strong>CSV</strong> and <strong>Excel (.xlsx)</strong> files up to 50MB</p>
+            <button class="btn btn-outline" id="browse-btn">Browse Files</button>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden />
+          </div>
+          <div class="upload-progress hidden" id="upload-progress">
+            <div class="file-info" id="file-info">
+              <i class="fa-solid fa-file-csv"></i>
+              <span id="file-name-display">filename.csv</span>
+              <span id="file-size-display">2.4 MB</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-labels">
+              <span id="progress-pct">0%</span>
+              <span id="progress-status">Uploading...</span>
+            </div>
+          </div>
+          <div class="upload-config" id="upload-config" style="display:none">
+            <h3>Configure Analysis</h3>
+            <div class="config-grid">
+              <div class="form-group">
+                <label>Target Column (Prediction)</label>
+                <div class="input-wrap"><i class="fa-solid fa-bullseye"></i>
+                  <select id="target-col"><option>Select column...</option><option>loan_approved</option><option>hired</option><option>credit_score</option></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Protected Attribute</label>
+                <div class="input-wrap"><i class="fa-solid fa-people-group"></i>
+                  <select id="protected-attr"><option>Select column...</option><option>gender</option><option>race</option><option>age_group</option></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Fairness Threshold</label>
+                <div class="input-wrap"><i class="fa-solid fa-sliders"></i>
+                  <select id="threshold"><option>0.05 (Strict)</option><option>0.10 (Standard)</option><option>0.20 (Lenient)</option></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Analysis Type</label>
+                <div class="input-wrap"><i class="fa-solid fa-flask"></i>
+                  <select id="analysis-type"><option>Full Audit</option><option>Quick Scan</option><option>Comparative</option></select>
+                </div>
+              </div>
+            </div>
+            <div class="metric-checkboxes">
+              <label class="metric-label">Metrics to compute:</label>
+              <div class="check-grid">
+                <label class="form-check"><input type="checkbox" checked /> Demographic Parity</label>
+                <label class="form-check"><input type="checkbox" checked /> Equalized Odds</label>
+                <label class="form-check"><input type="checkbox" checked /> Equal Opportunity</label>
+                <label class="form-check"><input type="checkbox" /> Calibration</label>
+                <label class="form-check"><input type="checkbox" /> Individual Fairness</label>
+                <label class="form-check"><input type="checkbox" /> Counterfactual</label>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-lg" id="run-analysis-btn"><i class="fa-solid fa-play"></i> Run Bias Analysis</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- BIAS DETECTION RESULTS PAGE -->
+<div class="page" id="page-results">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar-results">
+      <div class="sidebar-header">
+        <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="#" class="sidebar-link" data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Dataset</a>
+        <a href="#" class="sidebar-link active" data-page="results"><i class="fa-solid fa-chart-bar"></i> Bias Results</a>
+        <a href="#" class="sidebar-link" data-page="reports"><i class="fa-solid fa-file-lines"></i> Reports</a>
+        <a href="#" class="sidebar-link" data-page="feedback"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
+        <a href="#" class="sidebar-link admin-only hidden" data-page="admin"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </aside>
+    <main class="dashboard-main">
+      <div class="dash-topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar('sidebar-results')"><i class="fa-solid fa-bars"></i></button>
+        <h2 class="dash-title">Bias Detection Results</h2>
+        <button class="btn btn-primary btn-sm" onclick="showPage('reports')"><i class="fa-solid fa-file-export"></i> Export Report</button>
+      </div>
+      <div class="dash-content">
+        <div class="results-overview">
+          <div class="result-score-card">
+            <div class="score-ring" id="score-ring">
+              <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle class="ring-fill" cx="60" cy="60" r="50" id="ring-fill-circle"/></svg>
+              <div class="score-center"><span class="score-num" id="overall-score">0.12</span><span class="score-sub">Bias Score</span></div>
+            </div>
+            <div class="score-verdict" id="score-verdict">
+              <span class="verdict-badge medium">Moderate Bias</span>
+              <p>2 metrics exceed fairness threshold</p>
+            </div>
+          </div>
+          <div class="metric-cards-row">
+            <div class="metric-mini-card good"><i class="fa-solid fa-circle-check"></i><span class="mm-val">0.03</span><span class="mm-label">Demographic Parity</span></div>
+            <div class="metric-mini-card warn"><i class="fa-solid fa-triangle-exclamation"></i><span class="mm-val">0.18</span><span class="mm-label">Equalized Odds</span></div>
+            <div class="metric-mini-card good"><i class="fa-solid fa-circle-check"></i><span class="mm-val">0.07</span><span class="mm-label">Equal Opportunity</span></div>
+            <div class="metric-mini-card bad"><i class="fa-solid fa-circle-xmark"></i><span class="mm-val">0.24</span><span class="mm-label">Calibration</span></div>
+          </div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h4>Demographic Parity by Group</h4>
+            <canvas id="parityChart" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h4>Fairness Metrics Radar</h4>
+            <canvas id="radarChart" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h4>Prediction Distribution</h4>
+            <canvas id="distChart" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h4>Bias Score Over Time</h4>
+            <canvas id="trendChart" height="200"></canvas>
+          </div>
+        </div>
+        <div class="findings-section">
+          <h3>Key Findings & Recommendations</h3>
+          <div class="finding-list">
+            <div class="finding-item warn">
+              <div class="finding-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="finding-body">
+                <h4>Equalized Odds Violation (0.18 > 0.10 threshold)</h4>
+                <p>Female applicants have significantly lower true positive rate than male applicants. Consider re-sampling or post-processing calibration.</p>
+              </div>
+            </div>
+            <div class="finding-item bad">
+              <div class="finding-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+              <div class="finding-body">
+                <h4>Calibration Bias (0.24 > 0.10 threshold)</h4>
+                <p>Model confidence scores are not well-calibrated across racial groups. Apply Platt scaling or isotonic regression per subgroup.</p>
+              </div>
+            </div>
+            <div class="finding-item good">
+              <div class="finding-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="finding-body">
+                <h4>Demographic Parity Satisfied (0.03)</h4>
+                <p>Positive prediction rates are approximately equal across gender groups. This metric is within acceptable bounds.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- REPORTS PAGE -->
+<div class="page" id="page-reports">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar-reports">
+      <div class="sidebar-header">
+        <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="#" class="sidebar-link" data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Dataset</a>
+        <a href="#" class="sidebar-link" data-page="results"><i class="fa-solid fa-chart-bar"></i> Bias Results</a>
+        <a href="#" class="sidebar-link active" data-page="reports"><i class="fa-solid fa-file-lines"></i> Reports</a>
+        <a href="#" class="sidebar-link" data-page="feedback"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
+        <a href="#" class="sidebar-link admin-only hidden" data-page="admin"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </aside>
+    <main class="dashboard-main">
+      <div class="dash-topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar('sidebar-reports')"><i class="fa-solid fa-bars"></i></button>
+        <h2 class="dash-title">Reports</h2>
+        <button class="btn btn-primary btn-sm" id="gen-report-btn"><i class="fa-solid fa-plus"></i> Generate Report</button>
+      </div>
+      <div class="dash-content">
+        <div class="reports-filters">
+          <div class="input-wrap sm"><i class="fa-solid fa-search"></i><input type="text" placeholder="Search reports..." id="report-search" /></div>
+          <select class="filter-select" id="report-filter">
+            <option>All Reports</option><option>High Bias</option><option>Compliant</option><option>Archived</option>
+          </select>
+        </div>
+        <div class="reports-table-wrap">
+          <table class="data-table" id="reports-table">
+            <thead>
+              <tr><th>Report Name</th><th>Dataset</th><th>Date</th><th>Bias Score</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="reports-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- FEEDBACK PAGE -->
+<div class="page" id="page-feedback">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar-feedback">
+      <div class="sidebar-header">
+        <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="#" class="sidebar-link" data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Dataset</a>
+        <a href="#" class="sidebar-link" data-page="results"><i class="fa-solid fa-chart-bar"></i> Bias Results</a>
+        <a href="#" class="sidebar-link" data-page="reports"><i class="fa-solid fa-file-lines"></i> Reports</a>
+        <a href="#" class="sidebar-link active" data-page="feedback"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
+        <a href="#" class="sidebar-link admin-only hidden" data-page="admin"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </aside>
+    <main class="dashboard-main">
+      <div class="dash-topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar('sidebar-feedback')"><i class="fa-solid fa-bars"></i></button>
+        <h2 class="dash-title">Feedback</h2>
+      </div>
+      <div class="dash-content">
+        <div class="feedback-container">
+          <div class="feedback-form-card">
+            <h3>Share Your Experience</h3>
+            <p>Help us improve the platform with your feedback.</p>
+            <form id="feedback-form">
+              <div class="form-group">
+                <label>Feedback Type</label>
+                <div class="type-tabs">
+                  <button type="button" class="type-tab active" data-type="feature"><i class="fa-solid fa-star"></i> Feature</button>
+                  <button type="button" class="type-tab" data-type="bug"><i class="fa-solid fa-bug"></i> Bug Report</button>
+                  <button type="button" class="type-tab" data-type="general"><i class="fa-solid fa-comment"></i> General</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Rating</label>
+                <div class="star-rating" id="star-rating">
+                  <i class="fa-star fa-regular" data-val="1"></i>
+                  <i class="fa-star fa-regular" data-val="2"></i>
+                  <i class="fa-star fa-regular" data-val="3"></i>
+                  <i class="fa-star fa-regular" data-val="4"></i>
+                  <i class="fa-star fa-regular" data-val="5"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Subject</label>
+                <div class="input-wrap"><i class="fa-solid fa-heading"></i><input type="text" id="fb-subject" placeholder="Brief summary..." /></div>
+              </div>
+              <div class="form-group">
+                <label>Message</label>
+                <textarea id="fb-message" class="form-textarea" placeholder="Describe your experience in detail..." rows="5"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Feedback</button>
+            </form>
+          </div>
+          <div class="feedback-list-card">
+            <h3>Previous Feedback</h3>
+            <div class="fb-list" id="fb-list">
+              <div class="fb-item">
+                <div class="fb-meta"><span class="fb-type feature">Feature</span><div class="fb-stars">★★★★★</div><span class="fb-date">Apr 20</span></div>
+                <h4>Excellent bias visualization tools</h4>
+                <p>The radar charts make it very easy to communicate results to non-technical stakeholders.</p>
+              </div>
+              <div class="fb-item">
+                <div class="fb-meta"><span class="fb-type bug">Bug</span><div class="fb-stars">★★★☆☆</div><span class="fb-date">Apr 15</span></div>
+                <h4>Export to PDF sometimes slow</h4>
+                <p>Large datasets take over a minute to export. Could use a background job with email notification.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ADMIN PANEL PAGE -->
+<div class="page" id="page-admin">
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar-admin">
+      <div class="sidebar-header">
+        <span class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+        <span class="brand-name">Unbiased<span class="accent">AI</span></span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link" data-page="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <a href="#" class="sidebar-link" data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Dataset</a>
+        <a href="#" class="sidebar-link" data-page="results"><i class="fa-solid fa-chart-bar"></i> Bias Results</a>
+        <a href="#" class="sidebar-link" data-page="reports"><i class="fa-solid fa-file-lines"></i> Reports</a>
+        <a href="#" class="sidebar-link" data-page="feedback"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
+        <a href="#" class="sidebar-link active" data-page="admin"><i class="fa-solid fa-user-shield"></i> Admin Panel</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </aside>
+    <main class="dashboard-main">
+      <div class="dash-topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar('sidebar-admin')"><i class="fa-solid fa-bars"></i></button>
+        <h2 class="dash-title">Admin Panel</h2>
+        <span class="role-badge admin">Admin</span>
+      </div>
+      <div class="dash-content">
+        <div class="admin-stats-row">
+          <div class="admin-stat-card"><i class="fa-solid fa-users"></i><div><span class="ast-num">247</span><span class="ast-label">Total Users</span></div></div>
+          <div class="admin-stat-card"><i class="fa-solid fa-database"></i><div><span class="ast-num">1,842</span><span class="ast-label">Datasets</span></div></div>
+          <div class="admin-stat-card"><i class="fa-solid fa-file-lines"></i><div><span class="ast-num">3,291</span><span class="ast-label">Reports</span></div></div>
+          <div class="admin-stat-card warn"><i class="fa-solid fa-triangle-exclamation"></i><div><span class="ast-num">14</span><span class="ast-label">High Bias Cases</span></div></div>
+        </div>
+        <div class="admin-panels">
+          <div class="admin-panel-card">
+            <div class="panel-header">
+              <h3>User Management</h3>
+              <button class="btn btn-primary btn-sm" id="add-user-btn"><i class="fa-solid fa-plus"></i> Add User</button>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+          <div class="admin-panel-card">
+            <h3>System Activity</h3>
+            <canvas id="activityChart" height="160"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
